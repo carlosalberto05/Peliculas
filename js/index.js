@@ -5,7 +5,7 @@ const API_KEY = '128402215172fea4f96566ae019f6b5d';
 
 //Evento
 document.addEventListener('DOMContentLoaded', async () => {
-	const movies = await getNewsMovies();
+	renderNewsMovies();
 });
 
 //Método que nos devolverá todas las peliculas
@@ -17,4 +17,10 @@ const getNewsMovies = () => {
 		.then(response => response.json())
 		.then(result => result.results)
 		.catch(error => console.log(error));
+};
+
+const renderNewsMovies = async () => {
+	const newMovies = await getNewsMovies();
+
+	console.log(newMovies);
 };
