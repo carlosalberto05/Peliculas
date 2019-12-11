@@ -6,6 +6,7 @@ const API_KEY = '128402215172fea4f96566ae019f6b5d';
 //Evento
 document.addEventListener('DOMContentLoaded', async () => {
 	renderNewsMovies();
+	renderPopularMovies();
 });
 
 //Método que nos devolverá todas las peliculas
@@ -21,7 +22,6 @@ const getNewsMovies = () => {
 
 const renderNewsMovies = async () => {
 	const newMovies = await getNewsMovies();
-	// console.log(newMovies);
 
 	let html = '';
 
@@ -30,8 +30,10 @@ const renderNewsMovies = async () => {
 		const urlImage = `https://image.tmdb.org/t/p/original${backdrop_path}`;
 		const urlMovie = `../movie.html?id=${id}`;
 
-	html += `
-			<div class="carousel-item ${index === 0 ? 'active' : null}" style="background-image: url('${urlImage}')">
+		html += `
+			<div class="carousel-item ${
+				index === 0 ? 'active' : null
+			}" style="background-image: url('${urlImage}')">
 				<div class="carousel-caption">
 					<h5>${title}</h5>
 					<p>${overview}</p>
@@ -40,7 +42,6 @@ const renderNewsMovies = async () => {
 			</div>
 		`;
 	});
-
 
 	html += `
 		<a class="carousel-control-prev" href="#carousel-news-movies" role="button" data-slide="prev">
@@ -53,7 +54,37 @@ const renderNewsMovies = async () => {
 		</a>
 	`;
 
-	
-
 	document.getElementsByClassName('list-news-movies')[0].innerHTML = html;
+};
+
+const getPopularMovies = () => {
+	const url = `${URL_PATH}/3/movie/popular?api_key=${API_KEY}&language=es-ES&page=1`;
+
+	return fetch(url)
+		.then(response => response.json())
+		.then(result => result.results)
+		.catch(error => console.log(error));
+};
+
+const renderPopularMovies = async () => {
+	const movies = await getPopularMovies();
+
+	let html = '';
+
+	movies.forEach((movie, index) => {
+		const { id, title, poster_path } = movie;
+		const movieCover = `https://image.tmdb.org/t/p/original${poster_path}`;
+		const urlMovie = `../movie.html?id=${id}`;
+
+		if (index < 5) {
+			html += `
+				<li class="list-group-item">
+					<img src="${movieCover}" alt="${title}">
+					<h3>${title}</h3>
+					<a href="${urlMovie}" class="btn btn-primary">Ver más</a>
+				</li>
+			`;
+		}
+		document.getElementsByClassName('now-playing_list')[0].innerHTML = html;
+	});
 };
