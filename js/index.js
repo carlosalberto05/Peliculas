@@ -4,17 +4,15 @@ const API_KEY = '128402215172fea4f96566ae019f6b5d';
 // https://api.themoviedb.org/3/movie/now_playing?api_key=128402215172fea4f96566ae019f6b5d&language=es-ES&page=1
 
 //Evento
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
 	renderNewsMovies();
-	renderPopularMovies();
-	renderTopRatedMovies();
+	renderListMovies('popular', 'now-playing_list');
+	renderListMovies('top_rated', 'top-rated-playing_list');
 });
 
-//Método que nos devolverá todas las peliculas
-const getNewsMovies = () => {
-	const url = ` ${URL_PATH}/3/movie/now_playing?api_key=${API_KEY}&language=es-ES&page=1`;
+const getMovies = type => {
+	const url = ` ${URL_PATH}/3/movie/${type}?api_key=${API_KEY}&language=es-ES&page=1`;
 
-	//Petición fetch
 	return fetch(url)
 		.then(response => response.json())
 		.then(result => result.results)
@@ -22,7 +20,7 @@ const getNewsMovies = () => {
 };
 
 const renderNewsMovies = async () => {
-	const newMovies = await getNewsMovies();
+	const newMovies = await getMovies('now_playing');
 
 	let html = '';
 
@@ -58,17 +56,8 @@ const renderNewsMovies = async () => {
 	document.getElementsByClassName('list-news-movies')[0].innerHTML = html;
 };
 
-const getPopularMovies = () => {
-	const url = `${URL_PATH}/3/movie/popular?api_key=${API_KEY}&language=es-ES&page=1`;
-
-	return fetch(url)
-		.then(response => response.json())
-		.then(result => result.results)
-		.catch(error => console.log(error));
-};
-
-const renderPopularMovies = async () => {
-	const movies = await getPopularMovies();
+const renderListMovies = async (type, classLoc) => {
+	const movies = await getMovies(type);
 
 	let html = '';
 
@@ -86,43 +75,6 @@ const renderPopularMovies = async () => {
 				</li>
 			`;
 		}
-		document.getElementsByClassName('now-playing_list')[0].innerHTML = html;
+		document.getElementsByClassName(classLoc)[0].innerHTML = html;
 	});
-};
-
-//Funcion para pedir los datos
-
-const getTopRateMovies = () => {
-	const url = `${URL_PATH}/3/movie/top_rated?api_key=${API_KEY}&language=es-ES&page=1`;
-
-	return fetch(url)
-		.then(response => response.json())
-		.then(result => result.results)
-		.catch(error => console.log(error));
-};
-
-//Funcion para renderizar nuestro componente
-//Es asincrono por que el fetch devuelve una promesa
-
-const renderTopRatedMovies = async () => {
-	const movies = await getTopRateMovies();
-
-	let html = '';
-	movies.forEach((movie, index) => {
-		const { id, title, poster_path } = movie;
-		const movieCover = `https://image.tmdb.org/t/p/w500/${poster_path}`;
-		const urlMovie = `../movie.html?id=${id}`;
-
-		//Queremos los primeros 5 elementos
-		if (index < 5) {
-			html += `
-				<li class="list-group-item">
-					<img src="${movieCover}" alt="${title}" />
-					<h3>${title}</h3>
-					<a href="${urlMovie}" class="btn btn-primary">Ver Más</a>
-				</li>
-			`;
-		}
-	});
-	document.getElementsByClassName('top-rated-playing_list')[0].innerHTML = html;
 };
